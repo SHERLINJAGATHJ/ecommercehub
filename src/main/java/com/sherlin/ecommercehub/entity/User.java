@@ -24,6 +24,9 @@ private String password;
 @Column(nullable=false)
 private LocalDateTime createdAt;
 
+protected User(){
+}
+
 public User(String name,String email,String password){
     this.name=name;
     this.email=email;

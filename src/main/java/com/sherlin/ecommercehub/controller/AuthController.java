@@ -1,7 +1,12 @@
 package com.sherlin.ecommercehub.controller;
 
+import com.sherlin.ecommercehub.dto.LoginRequest;
+import com.sherlin.ecommercehub.dto.LoginResponse;
 import com.sherlin.ecommercehub.dto.RegisterRequest;
 import com.sherlin.ecommercehub.dto.UserResponse;
+import com.sherlin.ecommercehub.entity.User;
+import com.sherlin.ecommercehub.service.AuthService;
+import com.sherlin.ecommercehub.service.JwtService;
 import com.sherlin.ecommercehub.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,9 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserService userService;
+    private final AuthService authService;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService){
+    public AuthController(UserService userService,AuthService authService,JwtService jwtService){
         this.userService=userService;
+        this.authService=authService;
+        this.jwtService=jwtService;
     }
 
 
@@ -31,5 +40,18 @@ public class AuthController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+
+        User user=authService.authenticate(request);
+
+        String token=jwtService.generateToken(user);
+
+        LoginResponse response=new LoginResponse(token,"Bearer");
+
+        return ResponseEntity.ok(response);
+
     }
 }
