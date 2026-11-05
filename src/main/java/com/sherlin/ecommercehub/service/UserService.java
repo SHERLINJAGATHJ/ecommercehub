@@ -4,6 +4,7 @@ import com.sherlin.ecommercehub.dto.RegisterRequest;
 import com.sherlin.ecommercehub.dto.UserResponse;
 import com.sherlin.ecommercehub.entity.User;
 import com.sherlin.ecommercehub.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,18 @@ public class UserService {
                 savedUser.getName(),
                 savedUser.getEmail()
         );
+    }
+
+    public UserResponse getUserById(Long userId){
+
+        User user=userRepository.findById(userId)
+                .orElseThrow(()->
+                        new org.springframework.web.server.ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found"
+                        )
+                );
+
+        return new UserResponse(user.getId(),user.getName(),user.getEmail());
     }
 }
